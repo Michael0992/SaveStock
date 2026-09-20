@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "savestock",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["server.js"],
+      "port": 3200,
+      "autoPort": false
+    }
+  ]
+}

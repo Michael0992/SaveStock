@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SaveStock - Login</title>
+  <link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+  <div class="login-wrap">
+    <form class="login-card" id="login-form" autocomplete="on">
+      <div class="brand"><span class="dot"></span> SaveStock</div>
+      <div class="sub">Bitte anmelden um fortzufahren.</div>
+
+      <label for="user">Benutzer</label>
+      <input id="user" name="username" autocomplete="username" required autofocus>
+
+      <label for="password">Passwort</label>
+      <input id="password" name="password" type="password" autocomplete="current-password" required>
+
+      <div style="height:20px"></div>
+      <button class="primary block" type="submit" id="submit">Anmelden</button>
+
+      <div id="msg" class="msg err hidden"></div>
+    </form>
+  </div>
+  <script src="/assets/login.js"></script>
+</body>
+</html>

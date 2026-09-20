@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SaveStock</title>
+  <link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="dot"></span> SaveStock</div>
+    <div class="user-chip">
+      <span id="who"></span>
+      <button class="sm ghost" id="logout">Abmelden</button>
+    </div>
+  </header>
+
+  <main class="shell">
+    <!-- Kennzahlen -->
+    <section class="metrics">
+      <div class="metric">
+        <div class="k">Number of savestocks</div>
+        <div class="v" id="m-stocks">-</div>
+        <div class="hint" id="m-stocks-hint">&nbsp;</div>
+      </div>
+      <div class="metric">
+        <div class="k">Traffic</div>
+        <div class="v" id="m-traffic">-</div>
+        <div class="hint" id="m-traffic-hint">&nbsp;</div>
+      </div>
+      <div class="metric">
+        <div class="k">Used memory</div>
+        <div class="v" id="m-memory">-</div>
+        <div class="hint" id="m-memory-hint">&nbsp;</div>
+      </div>
+    </section>
+
+    <!-- Menue -->
+    <nav class="menu">
+      <button data-view="create"><span class="t">SaveStock einrichten</span><span class="d">Neuen Stock anlegen und API-Key erzeugen</span></button>
+      <button data-view="list"><span class="t">SaveStock einsehen</span><span class="d">Statistiken, Variablen und API-Key</span></button>
+      <button data-view="options"><span class="t">Optionen</span><span class="d">Zugangsdaten und Server-Einstellungen</span></button>
+    </nav>
+
+    <!-- SaveStock einrichten -->
+    <section class="panel hidden" id="view-create">
+      <h2>SaveStock einrichten</h2>
+      <p class="lead">Name vergeben, danach wird der API-Key erzeugt und gespeichert.</p>
+
+      <form id="create-form">
+        <div class="row">
+          <div>
+            <label for="new-name">Name</label>
+            <input id="new-name" placeholder="z.B. wohnzimmer-sensor" required>
+          </div>
+          <div class="shrink">
+            <label>&nbsp;</label>
+            <button class="primary" type="submit">Anlegen &amp; Key generieren</button>
+          </div>
+        </div>
+        <label for="new-desc">Beschreibung (optional)</label>
+        <textarea id="new-desc" placeholder="Wofuer ist dieser Stock?"></textarea>
+      </form>
+
+      <div id="create-msg" class="msg hidden"></div>
+
+      <div id="create-result" class="hidden">
+        <h3>API-Key</h3>
+        <p class="lead">Dieser Key ist gespeichert und jederzeit unter &bdquo;SaveStock einsehen&ldquo; abrufbar.</p>
+        <div class="key-box"><code id="create-key"></code><button class="sm" data-copy="create-key">Kopieren</button></div>
+        <h3>Erste Schritte</h3>
+        <pre class="snippet" id="create-snippet"></pre>
+      </div>
+    </section>
+
+    <!-- Uebersicht -->
+    <section class="panel hidden" id="view-list">
+      <h2>SaveStock einsehen</h2>
+      <p class="lead">Alle angelegten Stocks. Auf den Namen klicken fuer Details.</p>
+      <div id="list-body"></div>
+    </section>
+
+    <!-- Detail -->
+    <section class="panel hidden" id="view-detail">
+      <button class="backlink" id="back-to-list">&larr; Zurueck zur Uebersicht</button>
+      <h2 id="d-name">-</h2>
+      <p class="lead" id="d-desc"></p>
+
+      <h3>API-Calls</h3>
+      <div class="stat-grid" id="d-stats"></div>
+
+      <h3>Calls pro Minute (letzte Stunde)</h3>
+      <div class="spark" id="d-spark"></div>
+
+      <h3>API-Key</h3>
+      <div class="key-box"><code id="d-key"></code><button class="sm" data-copy="d-key">Kopieren</button><button class="sm" id="d-rotate">Neu generieren</button></div>
+
+      <h3>Variablen</h3>
+      <div id="d-vars"></div>
+      <form id="var-form" style="margin-top:14px">
+        <div class="row">
+          <div><label for="v-name">Name</label><input id="v-name" placeholder="temperatur" required></div>
+          <div class="shrink" style="min-width:120px">
+            <label for="v-type">Typ</label>
+            <select id="v-type">
+              <option>string</option><option>int</option><option>float</option><option>bool</option><option>json</option>
+            </select>
+          </div>
+          <div><label for="v-value">Wert</label><input id="v-value" placeholder="0"></div>
+          <div class="shrink"><label>&nbsp;</label><button type="submit">Variable anlegen</button></div>
+        </div>
+      </form>
+      <div id="detail-msg" class="msg hidden"></div>
+
+      <h3>Endpunkte</h3>
+      <pre class="snippet" id="d-snippet"></pre>
+
+      <h3>Gefahrenzone</h3>
+      <div class="row">
+        <div><label for="del-confirm">Zum Loeschen den Namen eingeben</label><input id="del-confirm" placeholder=""></div>
+        <div class="shrink"><label>&nbsp;</label><button class="danger" id="d-delete">SaveStock loeschen</button></div>
+      </div>
+    </section>
+
+    <!-- Optionen -->
+    <section class="panel hidden" id="view-options">
+      <h2>Optionen</h2>
+      <p class="lead">Aendert die Zugangsdaten in der <code>.env</code>. Das Passwort wird als scrypt-Hash gespeichert.</p>
+
+      <form id="options-form">
+        <label for="o-current">Aktuelles Passwort (Pflicht)</label>
+        <input id="o-current" type="password" autocomplete="current-password" required>
+
+        <h3>Zugangsdaten</h3>
+        <label for="o-user">Benutzername</label>
+        <input id="o-user" autocomplete="username">
+
+        <div class="row">
+          <div>
+            <label for="o-new">Neues Passwort</label>
+            <input id="o-new" type="password" autocomplete="new-password" placeholder="leer lassen = unveraendert">
+          </div>
+          <div>
+            <label for="o-new2">Neues Passwort wiederholen</label>
+            <input id="o-new2" type="password" autocomplete="new-password">
+          </div>
+        </div>
+
+        <h3>Session</h3>
+        <div class="row">
+          <div>
+            <label for="o-ttl">Laufzeit in Minuten</label>
+            <input id="o-ttl" type="number" min="1" max="43200">
+          </div>
+          <div class="shrink" style="align-self:center">
+            <label for="o-rotate">Session-Secret</label>
+            <label style="text-transform:none;letter-spacing:0;color:var(--text);font-size:14px">
+              <input type="checkbox" id="o-rotate" style="width:auto;margin-right:6px">neu erzeugen (loggt alle aus)
+            </label>
+          </div>
+        </div>
+
+        <div style="height:18px"></div>
+        <button class="primary" type="submit">Speichern</button>
+      </form>
+
+      <div id="options-msg" class="msg hidden"></div>
+
+      <h3>Server</h3>
+      <div class="stat-grid" id="o-info"></div>
+    </section>
+  </main>
+
+  <script src="/assets/app.js"></script>
+</body>
+</html>
